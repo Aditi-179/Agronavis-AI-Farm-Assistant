@@ -2,11 +2,17 @@
 
 > **A comprehensive Progressive Web Application that empowers farmers with AI-driven crop monitoring, disease detection, and data-driven agricultural decision-making tools.**
 
-## 🎥 Project Demo
+## 🎥 About the Project
 
-[![AgroNavis Demo Video](https://img.youtube.com/vi/5EGHdtlyqxM/maxresdefault.jpg)](https://youtu.be/5EGHdtlyqxM)
+<div align="center">
 
-**Watch our comprehensive demo** showcasing AgroNavis features, AI disease detection in action, and real-world farming scenarios. Click the video above or visit: https://youtu.be/5EGHdtlyqxM
+[![AgroNavis Project Overview](https://img.youtube.com/vi/5EGHdtlyqxM/0.jpg)](https://www.youtube.com/embed/5EGHdtlyqxM "AgroNavis - AI-Powered Smart Farm Monitoring Platform")
+
+*Comprehensive overview of AgroNavis features, AI disease detection capabilities, and real-world farming applications*
+
+**📺 Click above to watch the project overview embedded in GitHub**
+
+</div>
 
 ---
 
