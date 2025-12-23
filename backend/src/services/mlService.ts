@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Request, Response } from 'express';
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8001';
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
 
 export interface MLAnalysisRequest {
   image_base64: string;

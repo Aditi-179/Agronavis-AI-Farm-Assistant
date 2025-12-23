@@ -41,6 +41,7 @@ interface AnalysisReportProps {
   onRetakePhoto: () => void;
   onSaveReport: () => void;
   onNewAnalysis?: () => void;
+  onBack?: () => void;
 }
 
 const AnalysisReport: React.FC<AnalysisReportProps> = ({
@@ -48,7 +49,8 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
   imageUrl,
   onRetakePhoto,
   onSaveReport,
-  onNewAnalysis
+  onNewAnalysis,
+  onBack,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -142,7 +144,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <button onClick={() => window.history.back()} className={styles.backButton}>
+        <button onClick={() => onBack ? onBack() : window.history.back()} className={styles.backButton}>
           ← {t('common.back')}
         </button>
         <h1 className={styles.title}>{t('report.title')}</h1>

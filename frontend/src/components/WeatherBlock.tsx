@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-const API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
 import styles from '../styles/WeatherWidget.module.css';
+
+const WEATHER_API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
 
 interface WeatherData {
     temperature: number;
@@ -80,7 +81,7 @@ const WeatherBlock: React.FC<WeatherBlockProps> = ({ farmLocation, compact = fal
 
             console.log('Fetching weather with coordinates:', userCoordinates);
 
-            if (!API_KEY || API_KEY === 'your_default_weather_api_key') {
+            if (!WEATHER_API_KEY || WEATHER_API_KEY === 'your_default_weather_api_key') {
                 throw new Error(t('weather.errors.apiKeyNotConfigured'));
             }
 
@@ -89,7 +90,7 @@ const WeatherBlock: React.FC<WeatherBlockProps> = ({ farmLocation, compact = fal
             }
 
             const { latitude, longitude } = userCoordinates;
-            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_KEY}`;
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${WEATHER_API_KEY}`;
 
             console.log('Making API call to:', apiUrl);
 

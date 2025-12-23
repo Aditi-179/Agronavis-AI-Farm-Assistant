@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-const API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
 import styles from '../styles/WeatherForecast.module.css';
+
+const WEATHER_API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
 
 interface WeatherData {
   temperature: number;
@@ -68,7 +69,7 @@ const WeatherForecast: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      if (!API_KEY || API_KEY === 'your_default_weather_api_key') {
+      if (!WEATHER_API_KEY || WEATHER_API_KEY === 'your_default_weather_api_key') {
         throw new Error(t('weather.errors.apiKeyNotConfigured'));
       }
 
@@ -79,7 +80,7 @@ const WeatherForecast: React.FC = () => {
       const { latitude, longitude } = userCoordinates;
 
       // Fetch current weather
-      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_KEY}`;
+      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${WEATHER_API_KEY}`;
       const currentResponse = await axios.get(currentWeatherUrl);
 
       if (currentResponse.data) {
@@ -94,7 +95,7 @@ const WeatherForecast: React.FC = () => {
       }
 
       // Fetch 5-day forecast
-      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_KEY}`;
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${WEATHER_API_KEY}`;
       const forecastResponse = await axios.get(forecastUrl);
 
       if (forecastResponse.data && forecastResponse.data.list) {

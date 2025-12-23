@@ -19,7 +19,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    debug: process.env.NODE_ENV === 'development',
+    debug: false, // Disabled debug logs for cleaner console output
     
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],

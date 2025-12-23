@@ -5,7 +5,6 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import styles from '../styles/CameraPage.module.css';
 
 const CameraPage: React.FC = () => {
-    console.log('Camera page loaded!');
     const router = useRouter();
     const { t } = useTranslation();
     const [mode, setMode] = useState<'select' | 'camera' | 'upload' | 'preview'>('select');
@@ -76,15 +75,11 @@ const CameraPage: React.FC = () => {
 
     // Capture photo from camera
     const capturePhoto = () => {
-        console.log('Capture photo clicked');
-        console.log('VideoRef current:', videoRef.current);
-        console.log('CanvasRef current:', canvasRef.current);
+
         
         if (videoRef.current && canvasRef.current) {
             const video = videoRef.current;
             const canvas = canvasRef.current;
-            
-            console.log('Video dimensions:', video.videoWidth, video.videoHeight);
             
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -93,11 +88,9 @@ const CameraPage: React.FC = () => {
             if (context) {
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-                console.log('Image captured, data URL length:', imageDataUrl.length);
                 setCapturedImage(imageDataUrl);
                 stopCamera();
                 setMode('preview');
-                console.log('Mode set to preview');
             } else {
                 console.error('Could not get canvas context');
             }

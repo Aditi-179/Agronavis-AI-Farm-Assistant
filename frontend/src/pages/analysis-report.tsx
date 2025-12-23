@@ -62,6 +62,22 @@ const AnalysisReportPage: React.FC = () => {
     router.push('/camera');
   };
 
+  const handleBack = () => {
+    try {
+      // Check if there's history to go back to
+      if (window.history.length > 1) {
+        router.back();
+      } else {
+        // Fallback to camera if no history
+        router.push('/camera');
+      }
+    } catch (error) {
+      // If navigation fails, fallback to camera
+      console.warn('Navigation back failed, redirecting to camera:', error);
+      router.push('/camera');
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -108,6 +124,7 @@ const AnalysisReportPage: React.FC = () => {
         onRetakePhoto={handleRetakePhoto}
         onSaveReport={handleSaveReport}
         onNewAnalysis={handleNewAnalysis}
+        onBack={handleBack}
       />
     </div>
   );
