@@ -1,4 +1,5 @@
-import { supabase, Farm } from '../lib/supabase'
+import { supabase } from '../lib/supabase';
+import type { Farm } from '../types';
 
 export class FarmService {
   // Create a new farm
