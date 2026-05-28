@@ -9,6 +9,7 @@ import resourceRoutes from './routes/resources';
 import soilHealthRoutes from './routes/soilHealth';
 import yieldRoutes from './routes/yields';
 import mlRoutes from './routes/ml'; // ML routes for plant disease and pest detection
+import soilEstimationRoutes from './routes/soilEstimation';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -70,6 +71,7 @@ app.use('/api/resources', authenticateSupabase, resourceRoutes);
 app.use('/api/soil-health', authenticateSupabase, soilHealthRoutes);
 app.use('/api/yields', authenticateSupabase, yieldRoutes);
 app.use('/api/ml', mlRoutes); // ML routes for plant disease and pest detection
+app.use('/api/soil-estimation', authenticateSupabase, soilEstimationRoutes);
 
 // Error handling middleware
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {

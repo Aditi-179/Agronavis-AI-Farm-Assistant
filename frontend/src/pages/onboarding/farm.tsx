@@ -9,12 +9,12 @@ import { useLocation } from '../../hooks/useLocation';
 export default function FarmSetup() {
   const { user } = useAuth();
   const router = useRouter();
+  const { farmId, hasBoundary } = router.query as { farmId?: string; hasBoundary?: string };
   const { loading, error, success, setLoading, setError, setSuccess } = useFormState();
   const { locationStatus, getCurrentLocation } = useLocation();
   
   const [formData, setFormData] = useState({
     farmName: '',
-    totalArea: '',
     address: '',
     soilType: '',
     irrigationType: '',
@@ -36,13 +36,11 @@ export default function FarmSetup() {
       [name]: val
     }));
     
-    // If "use current location" is checked, get the user's location
     if (name === 'useCurrentLocation' && val === true) {
       getCurrentLocation(handleLocationSuccess);
     }
   };
   
-  // Handle location success callback
   const handleLocationSuccess = (location: { latitude: string; longitude: string }) => {
     setFormData(prevData => ({
       ...prevData,
@@ -56,10 +54,9 @@ export default function FarmSetup() {
     setLoading(true);
     setError('');
     
-
-    
-    if (!formData.farmName || !formData.totalArea) {
-      setError('Farm name and total area are required');
+    // Only farm name is required — area will be calculated from the drawn polygon
+    if (!formData.farmName) {
+      setError('Farm name is required');
       setLoading(false);
       return;
     }
@@ -69,11 +66,10 @@ export default function FarmSetup() {
         throw new Error('You must be logged in to create a farm');
       }
 
-      // Format farm data for API
-      const farmPayload = {
-        // farmer_id is automatically added by the backend from the auth token
+      const farmPayload: any = {
         name: formData.farmName,
-        total_area: parseFloat(formData.totalArea),
+        // Set to 0 — the polygon draw step (Turf.js) will calculate and save the precise area
+        total_area: 0,
         address: formData.address || null,
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
@@ -88,19 +84,12 @@ export default function FarmSetup() {
         ownership_type: formData.ownershipType || null
       };
 
-
-
-      // Save farm to database using our API
       try {
         const newFarm = await farmApi.createFarm(farmPayload);
-
-        
-        setSuccess('Farm created successfully!');
-        
-        // Redirect to the crops setup page after a short delay
+        setSuccess('Farm details saved! Now draw your field boundary on the map.');
         setTimeout(() => {
-          router.push(`/onboarding/crops?farmId=${newFarm.id}`);
-        }, 1000);
+          router.push(`/dashboard?mode=draw&farmId=${newFarm.id}`);
+        }, 1200);
       } catch (apiError: any) {
         console.error('API error details:', apiError.response?.data || apiError);
         throw apiError;
@@ -164,21 +153,16 @@ export default function FarmSetup() {
               />
             </div>
             
-            <div className="mb-4">
-              <label htmlFor="totalArea" className="block text-sm font-medium text-gray-700 mb-1">
-                Total Area (in acres) *
-              </label>
-              <input
-                type="number"
-                id="totalArea"
-                name="totalArea"
-                value={formData.totalArea}
-                onChange={handleChange}
-                min="0.1"
-                step="0.1"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                required
-              />
+            {/* Area auto-calculation callout */}
+            <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-4 flex gap-3">
+              <span className="text-2xl flex-shrink-0">📐</span>
+              <div>
+                <p className="text-sm font-semibold text-green-800">Area will be auto-calculated</p>
+                <p className="text-xs text-green-700 mt-1">
+                  In the next step, you'll draw your field boundary on a map by clicking its corners.
+                  We'll use Turf.js to calculate the <strong>exact acres &amp; hectares</strong> automatically — no guessing needed.
+                </p>
+              </div>
             </div>
             
             <div className="mb-4">
@@ -244,7 +228,7 @@ export default function FarmSetup() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                <span className="font-medium text-blue-700">Farm Location (for Satellite Mapping)</span>
+                <span className="font-medium text-blue-700">Farm Location</span>
               </div>
               
               <div className="mb-3">
@@ -292,7 +276,7 @@ export default function FarmSetup() {
                     name="latitude"
                     value={formData.latitude}
                     onChange={handleChange}
-                    placeholder="e.g. 0.123456"
+                    placeholder="e.g. 22.5726"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
@@ -307,15 +291,15 @@ export default function FarmSetup() {
                     name="longitude"
                     value={formData.longitude}
                     onChange={handleChange}
-                    placeholder="e.g. 0.123456"
+                    placeholder="e.g. 88.3639"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                These coordinates will be used for satellite mapping and precise farm monitoring.
+                You can draw your farm boundary from the Map tab after creating the farm.
               </p>
-            </div>
+</div>
             
             <div className="mb-4">
               <label htmlFor="soilType" className="block text-sm font-medium text-gray-700 mb-1">
@@ -390,7 +374,7 @@ export default function FarmSetup() {
                 disabled={loading}
                 className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
               >
-                {loading ? 'Saving...' : 'Next: Crop Setup →'}
+                {loading ? 'Saving...' : 'Save Farm →'}
               </button>
             </div>
           </form>

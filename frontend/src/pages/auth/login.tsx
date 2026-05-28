@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { signInWithGoogle } from '../../lib/supabase'
-import { supabase } from '../../lib/supabase'
+import { signInWithGoogle, signInWithEmail, supabase } from '../../lib/supabase'
 import { useAuth } from '../../auth/context/AuthContext'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [testEmail, setTestEmail] = useState('')
   const router = useRouter()
   const { user } = useAuth()
 
@@ -74,6 +74,26 @@ export default function Login() {
     }
   }
 
+  const handleTestSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!testEmail) return;
+    
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data, error } = await signInWithEmail(testEmail);
+      if (error) throw error;
+      
+      // If sign in/up was successful, the useEffect hook will handle the redirect.
+      // On local dev, you might need to check Mailpit for the confirmation link if email confirmation is turned on.
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in with test email.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
       {/* Background Image */}
@@ -134,6 +154,35 @@ export default function Login() {
               </>
             )}
           </button>
+
+          {/* Local Dev Test Login */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-6 border-t border-gray-200 pt-6">
+              <p className="text-xs text-gray-500 text-center mb-4 uppercase tracking-wider font-semibold">
+                Local Testing
+              </p>
+              <form onSubmit={handleTestSignIn} className="flex gap-2">
+                <input 
+                  type="email" 
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  placeholder="test@example.com" 
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                  required
+                />
+                <button 
+                  type="submit"
+                  disabled={loading || !testEmail}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50"
+                >
+                  Sign In
+                </button>
+              </form>
+              <p className="text-xs text-center text-gray-400 mt-2">
+                If the user doesn't exist, they will be created automatically. Open Mailpit at <a href="http://127.0.0.1:54324" target="_blank" className="underline text-blue-500">http://127.0.0.1:54324</a> to accept the confirmation email if required.
+              </p>
+            </div>
+          )}
 
           {/* Features */}
           <div className="mt-8 text-center">

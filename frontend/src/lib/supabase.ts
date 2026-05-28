@@ -20,7 +20,7 @@ export const signInWithGoogle = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -41,6 +41,30 @@ export const signInWithGoogle = async () => {
     console.error('Exception signing in with Google:', err)
     return { data: null, error: err }
   }
+}
+
+// Local testing: Email login
+export const signInWithEmail = async (email: string, password: string = 'testpassword123') => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  
+  if (error && error.message.includes('Invalid login credentials')) {
+    // Auto-signup if it's local test
+    console.log('User not found, attempting signup for local test...');
+    return await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: 'Test',
+          last_name: 'User'
+        }
+      }
+    });
+  }
+  return { data, error };
 }
 
 export const signOut = async () => {

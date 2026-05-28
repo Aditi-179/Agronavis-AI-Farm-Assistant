@@ -2,9 +2,26 @@
 .dashboardContainer {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   padding: 16px;
+  padding-bottom: 80px;
   background-color: #f5f5f5;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+  .dashboardContainer {
+    padding-bottom: 16px;
+  }
+  
+  .bottomNav {
+    position: relative;
+    box-shadow: none;
+    border-top: none;
+    border-bottom: 1px solid #e5e7eb;
+    margin-top: 20px;
+  }
 }
 
 .header {
@@ -265,32 +282,700 @@
 /* Bottom Navigation */
 .bottomNav {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  align-items: center;
   background-color: white;
-  border-top: 1px solid #eee;
-  padding: 8px 0;
-  position: sticky;
+  border-top: 1px solid #e5e7eb;
+  padding: 10px 0;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .bottomNav {
+    position: relative;
+    box-shadow: none;
+    border-top: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 0;
+    margin-top: 20px;
+  }
 }
 
 .navItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 25%;
+  flex: 1;
   padding: 8px 0;
   cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 8px;
+}
+
+.navItem:active {
+  background-color: #f0fdf4;
 }
 
 .navIcon {
   font-size: 24px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .navText {
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
 }
 
 .active {
-  color: #4CAF50;
+  color: #16a34a;
+}
+
+.active .navText {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* Map Tab Styles */
+.mapTabContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 70px;
+}
+
+.mapTabHeader {
+  display: flex;
+  gap: 8px;
+}
+
+.mapTabButton {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.mapTabButton:hover {
+  background: #f9fafb;
+}
+
+.mapTabButtonActive {
+  background: #16a34a;
+  color: white;
+}
+
+.mapTabButtonActive:hover {
+  background: #15803d;
+}
+
+.mapContent {
+  flex: 1;
+  min-height: 400px;
+}
+
+.drawFieldContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.farmSelectCard {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.farmSelectLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.farmSelect {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.farmSelect:focus {
+  outline: none;
+  border-color: #16a34a;
+}
+
+.polygonMapperContainer {
+  flex: 1;
+  min-height: 350px;
+}
+
+.fieldNameInput {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.fieldNameLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.fieldNameInputField {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  background: white;
+}
+
+.fieldNameInputField:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.polygonInfoCard {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.polygonInfoHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.polygonInfoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #16a34a;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.polygonInfoTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.polygonInfoDetails {
+  display: flex;
+  gap: 20px;
+}
+
+.polygonInfoRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.polygonInfoRow span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.polygonInfoRow strong {
+  font-size: 14px;
+  color: #374151;
+}
+
+.saveMessage {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.saveMessageSuccess {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.saveMessageError {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  background: #fef3c7;
+  border-radius: 12px;
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.emptyStateTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 4px;
+}
+
+.emptyStateText {
+  font-size: 14px;
+  color: #b45309;
+}
+
+.addFarmButton {
+  margin-top: 16px;
+  padding: 12px 24px;
+  background-color: #8a56e3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addFarmButton:hover {
+  background-color: #7c3aed;
+}
+
+.comingSoon {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  padding: 40px;
+  text-align: center;
+}
+
+.comingSoonIcon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.comingSoon h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.comingSoon p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.fieldsSection {
+  padding: 16px;
+  background: white;
+  margin-top: 16px;
+  border-radius: 12px;
+}
+
+.fieldsSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.fieldsSectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.addFieldButton {
+  padding: 8px 16px;
+  background-color: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addFieldButton:hover {
+  background-color: #7c3aed;
+}
+
+.fieldCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.fieldCard {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.fieldCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.fieldCardIcon {
+  font-size: 20px;
+}
+
+.fieldCardName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.fieldCardDetails {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.fieldCardRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.fieldCardRow span:first-child {
+  color: #6b7280;
+}
+
+.fieldCardRow strong {
+  color: #1f2937;
+}
+
+.noFieldsMessage {
+  text-align: center;
+  padding: 24px;
+  background: #fef3c7;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.noFieldsMessage p {
+  color: #92400e;
+  margin-bottom: 12px;
+}
+
+.addFarmCard {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 16px;
+}
+
+.addFarmIcon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.addFarmTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.addFarmText {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.fieldCardSelected {
+  border: 2px solid #8b5cf6;
+  background: #f5f3ff;
+}
+
+.editButton {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #374151;
+  cursor: pointer;
+  width: 100%;
+}
+
+.editButton:hover {
+  background: #e5e7eb;
+}
+
+.drawModeContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 190px);
+  background: white;
+  position: relative;
+  z-index: 1;
+  padding-bottom: 70px;
+  margin: 8px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.drawModeHeader {
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.drawModeHeader h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.drawModeHeader p {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.drawModeMap {
+  flex: 1;
+  min-height: 250px;
+  position: relative;
+  z-index: 1;
+}
+
+.drawModePanel {
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  padding: 12px 16px;
+  max-height: 35vh;
+  overflow-y: auto;
+}
+
+.boundaryInfo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.boundaryBadge {
+  background: #dcfce7;
+  color: #166534;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.coordScroll {
+  background: #f9fafb;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 12px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.coordRow {
+  font-size: 11px;
+  color: #6b7280;
+  padding: 3px 0;
+  display: flex;
+  gap: 6px;
+}
+
+.coordRow span:first-child {
+  font-weight: 500;
+  color: #374151;
+}
+
+.drawActions {
+  display: flex;
+  gap: 10px;
+}
+
+.btnPrimary {
+  flex: 1;
+  padding: 10px 16px;
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnPrimary:disabled {
+  background: #d1d5db;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: #7c3aed;
+}
+
+.btnSecondary {
+  padding: 10px 16px;
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btnSecondary:hover {
+  background: #f9fafb;
+}
+/* Post-Save Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.modalHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.modalIcon {
+  font-size: 48px;
+  background: #f0fdf4;
+  height: 80px;
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #16a34a;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modalBody {
+  text-align: center;
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.modalBody p {
+  margin: 8px 0;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+}
+
+.modalButtonPrimary {
+  flex: 1;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modalButtonPrimary:hover {
+  background: #059669;
+}
+
+.modalButtonSecondary {
+  flex: 1;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modalButtonSecondary:hover {
+  background: #e2e8f0;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }

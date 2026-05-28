@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const supabaseUrl = process.env.SUPABASE_URL || 'https://klqvywmnzmrzvaobqded.supabase.co'
+const supabaseUrl = process.env.SUPABASE_URL || 'http://127.0.0.1:54321'
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
 
 if (!supabaseServiceKey) {
@@ -43,6 +43,18 @@ export interface Farm {
     state?: string;
     district?: string;
     village?: string;
+    coordinates_source?: string;
+    polygon?: Array<{lat: number; lng: number}>;
+    fields?: Array<{
+      id: string;
+      name: string;
+      area_acres: number;
+      area_hectares?: number;
+      polygon: Array<{lat: number; lng: number}>;
+      center_latitude?: number;
+      center_longitude?: number;
+      created_at?: string;
+    }>;
   };
   soil_type?: 'sandy' | 'clay' | 'loamy' | 'silt' | 'peaty' | 'chalky';
   irrigation_type?: 'drip' | 'sprinkler' | 'flood' | 'rainfed' | 'manual';

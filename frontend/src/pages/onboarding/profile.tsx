@@ -44,11 +44,16 @@ export default function ProfileSetup() {
         throw new Error('You must be logged in to update your profile');
       }
 
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user) {
+        throw new Error('Your session has expired. Please sign in again.');
+      }
+
       // Save farmer profile to database
       const { error: dbError } = await supabase
         .from('farmers')
         .upsert({
-          id: user.id,
+          id: authData.user.id,
           full_name: formData.fullName,
           phone_number: formData.phoneNumber,
           date_of_birth: formData.dateOfBirth || null,
@@ -70,7 +75,11 @@ export default function ProfileSetup() {
       
     } catch (err: any) {
       console.error('Error saving profile:', err);
-      setError(err.message || 'Failed to save profile information');
+      if (err?.code === '23503') {
+        setError('Your account record is out of sync. Please sign out, sign in again, and retry profile setup.');
+      } else {
+        setError(err.message || 'Failed to save profile information');
+      }
     } finally {
       setLoading(false);
     }

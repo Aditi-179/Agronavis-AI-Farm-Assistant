@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../auth/context/AuthContext'
 import ProtectedRoute from '../auth/components/ProtectedRoute'
 import { supabase } from '../lib/supabase'
-import Image from 'next/image'
 import DashboardContent from '../components/Dashboard' // Import with a different name
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import styles from '../styles/Dashboard.module.css'
@@ -162,15 +161,11 @@ const Dashboard: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-3">
               <div className="flex items-center">
-                <div className={styles.logoContainer}>
-                  <Image
-                    src="/images/AgronavisLogo.png"
-                    alt="AgroNavis Logo"
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-contain scale-100"
-                  />
-                </div>
+                <img
+                  src="/images/AgronavisLogo.png"
+                  alt="AgroNavis Logo"
+                  style={{ width: 60, height: 60, objectFit: 'contain', borderRadius: 8 }}
+                />
                 <h1 className="text-xl font-bold text-white ml-2">{t('dashboard.title')}</h1>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3">

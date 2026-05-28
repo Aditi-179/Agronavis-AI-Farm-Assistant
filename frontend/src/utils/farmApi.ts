@@ -68,7 +68,34 @@ export const farmApi = {
       params: { latitude, longitude, radius }
     });
     return response.data.data;
-  }
+  },
+
+  // --- Field-level operations (stored as JSONB in farms.location.fields) ---
+
+  // Get all fields for a farm
+  getFarmFields: async (farmId: string) => {
+    const response = await api.get(`/farms/${farmId}/fields`);
+    return response.data.data;
+  },
+
+  // Add a new field to a farm
+  addFarmField: async (farmId: string, fieldData: {
+    name: string;
+    area_acres: number;
+    area_hectares?: number;
+    polygon: Array<{ lat: number; lng: number }>;
+    center_latitude?: number;
+    center_longitude?: number;
+  }) => {
+    const response = await api.post(`/farms/${farmId}/fields`, fieldData);
+    return response.data.data;
+  },
+
+  // Delete a field from a farm
+  deleteFarmField: async (farmId: string, fieldId: string) => {
+    const response = await api.delete(`/farms/${farmId}/fields/${fieldId}`);
+    return response.data;
+  },
 };
 
 // Export other API modules as needed
