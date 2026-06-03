@@ -618,7 +618,7 @@ const Dashboard: React.FC<Props> = ({ activeTab, setActiveTab }) => {
 
       {/* ======================== FERTILIZER ======================== */}
       {activeTab === 'fertilizer' && (
-        <div className={s.fertSection}>
+        <div className={s.fertSection} id="fertilizer-print-area">
           {/* Left: Calculator */}
           <div>
             <div className={s.fertTitle}>Fertilizer Calculator</div>
@@ -748,7 +748,9 @@ const Dashboard: React.FC<Props> = ({ activeTab, setActiveTab }) => {
             <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 16 }}>
               Prices are indicative. Contact your local agri-input supplier for actual rates.
             </div>
-
+            <button className={s.printBtn} onClick={() => window.print()}>
+              Print Report
+            </button>
             <button className={s.orderBtn}>Generate Purchase Order</button>
           </div>
         </div>
