@@ -1,3 +1,4 @@
+import MarketPriceWidget from "./MarketPriceWidget";
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
@@ -334,7 +335,7 @@ const Dashboard: React.FC<Props> = ({ activeTab, setActiveTab }) => {
               <button className={s.expandBtn} onClick={() => setActiveTab('map')}>{t('dashboard.overview.openFieldMap')}</button>
             </div>
           </div>
-
+          <MarketPriceWidget />
           {/* AI Yield banner */}
           <div className={s.yieldBanner} style={{ marginTop: 24 }}>
             <div>
