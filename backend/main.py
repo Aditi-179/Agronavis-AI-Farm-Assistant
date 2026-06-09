@@ -118,13 +118,16 @@ resnet_model = models.resnet18(weights=None)
 resnet_model.fc = nn.Linear(resnet_model.fc.in_features, NUM_CLASSES)
 MODEL_PATH = os.path.join(BASE_DIR, "model", "plant_disease_resnet18.pth")
 
-if os.path.exists(MODEL_PATH):
-    resnet_model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
-    resnet_model = resnet_model.to(device)
-    resnet_model.eval()
-    print(f"[OK] ResNet18 loaded - {NUM_CLASSES} classes on {device}")
+if os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 0:
+    try:
+        resnet_model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+        resnet_model = resnet_model.to(device)
+        resnet_model.eval()
+        print(f"[OK] ResNet18 loaded -- {NUM_CLASSES} classes on {device}")
+    except Exception as e:
+        print(f"[WARN] Failed to load model weights: {e}. Inference will fail.")
 else:
-    print(f"[WARN] Model weights not found at {MODEL_PATH}. Inference will fail.")
+    print(f"[WARN] Model weights not found or empty at {MODEL_PATH}. Inference will fail.")
 
 # CLIP model (OOD guard) — lazy load to keep startup fast
 clip_model = None
@@ -222,10 +225,21 @@ class YieldCreate(BaseModel):
 class FieldCreate(BaseModel):
     name: str
     area_acres: float
+    polygon: List[Dict[str, float]]
+    center_latitude: Optional[float] = None
+    center_longitude: Optional[float] = None
+
+
+class FieldResponse(BaseModel):
+    id: str
+    farm_id: str
+    name: str
+    area_acres: float
     area_hectares: Optional[float] = None
     polygon: List[Dict[str, float]]
     center_latitude: Optional[float] = None
     center_longitude: Optional[float] = None
+    created_at: Optional[str] = None
 
 class SoilEstimationRequest(BaseModel):
     farm_id: str
@@ -642,51 +656,87 @@ async def delete_farm(farm_id: str, user=Depends(verify_token)):
 # ── Farm Fields (Polygon) ─────────────────────────────────────────────────────
 
 @app.get("/api/farms/{farm_id}/fields")
-async def get_fields(farm_id: str, user=Depends(verify_token)):
-    res = supabase.table("farms").select("location").eq("id", farm_id).eq("farmer_id", user.id).limit(1).execute()
-    if not res.data:
+async def get_fields(
+    farm_id: str,
+    user: dict = Depends(verify_token),
+) -> dict:
+    # Verify farm ownership before returning fields
+    owned = (
+        supabase.table("farms")
+        .select("id")
+        .eq("id", farm_id)
+        .eq("farmer_id", user.id)
+        .limit(1)
+        .execute()
+    )
+    if not owned.data:
         raise HTTPException(status_code=404, detail="Farm not found")
-    fields = (res.data.get("location") or {}).get("fields", [])
-    return {"success": True, "data": fields}
+
+    res = (
+        supabase.table("farm_fields")
+        .select("*")
+        .eq("farm_id", farm_id)
+        .order("created_at")
+        .execute()
+    )
+    return {"success": True, "data": res.data or []}
+
 
 @app.post("/api/farms/{farm_id}/fields", status_code=201)
-async def add_field(farm_id: str, body: FieldCreate, user=Depends(verify_token)):
-    owned = supabase.table("farms").select("location, total_area").eq("id", farm_id).eq("farmer_id", user.id).limit(1).execute()
+async def add_field(
+    farm_id: str,
+    body: FieldCreate,
+    user: dict = Depends(verify_token),
+) -> dict:
+    # Verify farm ownership
+    owned = (
+        supabase.table("farms")
+        .select("id")
+        .eq("id", farm_id)
+        .eq("farmer_id", user.id)
+        .limit(1)
+        .execute()
+    )
     if not owned.data:
         raise HTTPException(status_code=403, detail="Access denied")
 
-    current_loc = owned.data[0][0].get("location") or {}
-    current_fields = current_loc.get("fields", [])
-
-    new_field = {
-        "id": str(uuid.uuid4()),
-        **body.model_dump(),
+    payload: dict = {
+        "farm_id": farm_id,
+        "name": body.name,
+        "area_acres": body.area_acres,
+        "polygon": body.polygon,
+        "center_latitude": body.center_latitude,
+        "center_longitude": body.center_longitude,
     }
-    updated_fields = current_fields + [new_field]
-    total_area = sum(f.get("area_acres", 0) for f in updated_fields)
+    # Strip None values so DB defaults apply
+    payload = {k: v for k, v in payload.items() if v is not None}
 
-    supabase.table("farms").update({
-        "location": {**current_loc, "fields": updated_fields},
-        "total_area": total_area,
-    }).eq("id", farm_id).execute()
+    res = supabase.table("farm_fields").insert(payload).execute()
+    if not res.data:
+        raise HTTPException(status_code=500, detail="Failed to save field")
 
-    return {"success": True, "data": new_field}
+    return {"success": True, "data": res.data[0]}
+
 
 @app.delete("/api/farms/{farm_id}/fields/{field_id}")
-async def delete_field(farm_id: str, field_id: str, user=Depends(verify_token)):
-    owned = supabase.table("farms").select("location, total_area").eq("id", farm_id).eq("farmer_id", user.id).limit(1).execute()
+async def delete_field(
+    farm_id: str,
+    field_id: str,
+    user: dict = Depends(verify_token),
+) -> dict:
+    # Verify farm ownership
+    owned = (
+        supabase.table("farms")
+        .select("id")
+        .eq("id", farm_id)
+        .eq("farmer_id", user.id)
+        .limit(1)
+        .execute()
+    )
     if not owned.data:
         raise HTTPException(status_code=403, detail="Access denied")
 
-    current_loc = owned.data[0][0].get("location") or {}
-    current_fields = current_loc.get("fields", [])
-    updated_fields = [f for f in current_fields if f.get("id") != field_id]
-    total_area = sum(f.get("area_acres", 0) for f in updated_fields) or owned.data[0][0].get("total_area", 0)
-
-    supabase.table("farms").update({
-        "location": {**current_loc, "fields": updated_fields},
-        "total_area": total_area,
-    }).eq("id", farm_id).execute()
+    supabase.table("farm_fields").delete().eq("id", field_id).eq("farm_id", farm_id).execute()
     return {"success": True, "message": "Field deleted"}
 
 
