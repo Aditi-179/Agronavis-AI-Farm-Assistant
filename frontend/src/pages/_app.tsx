@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
@@ -6,6 +7,8 @@ import '../lib/i18n'
 import '../styles/globals.css'
 import 'leaflet/dist/leaflet.css'
 
+import { useHighContrastMode } from '../hooks/useHighContrastMode'
+
 // Load PWA install prompt only on client (uses browser APIs — no SSR)
 const PWAInstallPrompt = dynamic(
   () => import('../components/PWAInstallPrompt'),
@@ -13,6 +16,8 @@ const PWAInstallPrompt = dynamic(
 );
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useHighContrastMode();
+
   return (
     <AuthProvider>
       <Head>
@@ -25,4 +30,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   )
 }
 
-export default MyApp
+export default MyApp
